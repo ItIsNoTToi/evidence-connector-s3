@@ -36,8 +36,7 @@ module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint }) 
 					KEY_ID '${accessKeyId}',
 					SECRET '${secretAccessKey}',
 					REGION '${region}',
-					ENDPOINT '${endpoint}',   
-					USE_HTTPS false            
+					ENDPOINT '${endpoint}'       
 				);
 			`);
 
