@@ -17,7 +17,7 @@ const { Database } = require('duckdb-async');
 module.exports = async (queryString, _, batchSize = 100000) => runQuery(queryString, { filename: ':memory:' }, batchSize);
 
 /** @type {import("@evidence-dev/db-commons").GetRunner<DuckDBOptions>} */
-module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint }) => {
+module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint, useSSL }) => {
 	let db, conn;
 
 	return async (queryContent, queryPath, batchSize = 100000) => {
@@ -29,14 +29,14 @@ module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint }) 
 				custom_user_agent: 'evidence-dev'
 			});
 			conn = await db.connect();
-
 			await conn.exec(`
 				CREATE SECRET my_minio (
 					TYPE S3,
 					KEY_ID '${accessKeyId}',
 					SECRET '${secretAccessKey}',
 					REGION '${region}',
-					ENDPOINT '${endpoint}'    
+					ENDPOINT '${endpoint}',
+					USE_SSL '${useSSL}' 
 				);
 			`);
 
@@ -215,5 +215,12 @@ module.exports.options = {
 		type: 'string',
 		secret: false,
 		default: ''
-	}
+	},
+	useSSL: {
+        title: 'Use SSL/TLS (HTTPS)',
+        type: 'boolean',
+        secret: false,
+        shown: true,
+        default: true // Mặc định là bật HTTPS
+    }
 };
