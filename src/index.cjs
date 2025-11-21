@@ -17,7 +17,7 @@ const { Database } = require('duckdb-async');
 module.exports = async (queryString, _, batchSize = 100000) => runQuery(queryString, { filename: ':memory:' }, batchSize);
 
 /** @type {import("@evidence-dev/db-commons").GetRunner<DuckDBOptions>} */
-module.exports.getRunner = ({ accessKeyId, secretAccessKey, region }) => {
+module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint }) => {
 	let db, conn;
 
 	return async (queryContent, queryPath, batchSize = 100000) => {
@@ -31,13 +31,16 @@ module.exports.getRunner = ({ accessKeyId, secretAccessKey, region }) => {
 			conn = await db.connect();
 
 			await conn.exec(`
-				CREATE SECRET my_secret (
+				CREATE SECRET my_minio (
 					TYPE S3,
 					KEY_ID '${accessKeyId}',
 					SECRET '${secretAccessKey}',
-					REGION '${region}'
+					REGION '${region}',
+					ENDPOINT '${endpoint}',   
+					USE_HTTPS false            
 				);
 			`);
+
 		}
 
 		const cleanQuery = (query) => `(${query})`;
@@ -204,6 +207,12 @@ module.exports.options = {
 	},
 	region: {
 		title: 'Region',
+		type: 'string',
+		secret: false,
+		default: ''
+	},
+	endpoint: {
+		title: 'Endpoint',
 		type: 'string',
 		secret: false,
 		default: ''
