@@ -17,7 +17,7 @@ const { Database } = require('duckdb-async');
 module.exports = async (queryString, _, batchSize = 100000) => runQuery(queryString, { filename: ':memory:' }, batchSize);
 
 /** @type {import("@evidence-dev/db-commons").GetRunner<DuckDBOptions>} */
-module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint, usehttps }) => {
+module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint }) => {
 	let db, conn;
 
 	return async (queryContent, queryPath, batchSize = 100000) => {
@@ -36,8 +36,7 @@ module.exports.getRunner = ({ accessKeyId, secretAccessKey, region, endpoint, us
 					KEY_ID '${accessKeyId}',
 					SECRET '${secretAccessKey}',
 					REGION '${region}',
-					ENDPOINT '${endpoint}',
-					USE_HTTPS '${usehttps}'     
+					ENDPOINT '${endpoint}'    
 				);
 			`);
 
@@ -216,11 +215,5 @@ module.exports.options = {
 		type: 'string',
 		secret: false,
 		default: ''
-	},
-	usehttps: {
-		title: 'Use HTTPS',
-		type: 'boolean',
-		secret: false,
-		default: false
 	}
 };
